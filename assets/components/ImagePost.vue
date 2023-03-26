@@ -4,7 +4,7 @@
       <v-lazy-image class="post-img" loading="lazy" :src="image" :src-placeholder="thumbnail" :alt="caption"></v-lazy-image>
       <a @click="showModal()" data-bs-toggle="modal" data-bs-target="#postModal"><span class="show-post fa fa-eye"></span></a>
       <div class="img-overlay">
-        <like-button :likesCount="likes"></like-button>
+        <like-button :likesCount="likes" :liked="_liked" :liking_link="liking_link"></like-button>
       </div>
     </div>
 
@@ -32,18 +32,20 @@ export default {
       'caption',
       'likes',
       'liked',
+      'liking_link',
   ],
+  mounted() {
+    console.log(this.liked, !this.liked, !!this.liked);
+  },
   data() {
     return {
       'isLoading' : true,
+      '_liked': this.liked !== "0",
     }
   },
   methods: {
     showModal() {
-      console.log($('#postModal').length);
-
       this.$http.get(this.link).then(function (response) {
-        console.log(response.data);
         $('#postModal .modal-body').html(response.data);
       }).catch(function (error){
         console.log(error.message);

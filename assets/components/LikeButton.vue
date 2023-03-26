@@ -1,6 +1,6 @@
 <template>
   <div>
-    <button class="button button-like" :class="{_liked}" @click="like()">
+    <button class="button button-like" :class="_liked" @click="like()">
       <i class="fa fa-heart"></i>
       <span>{{ likes }}</span>
     </button>
@@ -13,6 +13,7 @@
     props: [
         'likesCount',
         'liked',
+        'liking_link',
     ],
     data() {
       return {
@@ -25,11 +26,20 @@
         this.count++
       },
       like() {
-        this.isActive = !this.isActive;
-        if (this.isActive)
-          this.likes++;
-        else
-          this.likes--;
+        let self = this;
+        this.$http.get(this.liking_link).then(function (response){
+          if (response.status === 200) {
+            self.isActive = !self.isActive;
+            if (self.isActive)
+              self.likes++;
+            else
+              self.likes--;
+          }
+        }).catch(function (err){
+          console.log(err);
+        });
+
+
       },
     },
     computed: {

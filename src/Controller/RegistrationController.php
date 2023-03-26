@@ -2,8 +2,10 @@
 
 namespace App\Controller;
 
+use App\Entity\Profile;
 use App\Entity\User;
 use App\Form\RegistrationFormType;
+use App\Repository\ProfileRepository;
 use App\Security\AppCustomAuthenticator;
 use App\Security\EmailVerifier;
 use Doctrine\ORM\EntityManagerInterface;
@@ -21,10 +23,12 @@ use SymfonyCasts\Bundle\VerifyEmail\Exception\VerifyEmailExceptionInterface;
 class RegistrationController extends AbstractController
 {
     private EmailVerifier $emailVerifier;
+    private ProfileRepository $profileRepository;
 
-    public function __construct(EmailVerifier $emailVerifier)
+    public function __construct(EmailVerifier $emailVerifier, ProfileRepository $profileRepository)
     {
         $this->emailVerifier = $emailVerifier;
+        $this->profileRepository = $profileRepository;
     }
 
     #[Route('/register', name: 'app_register')]
@@ -55,6 +59,12 @@ class RegistrationController extends AbstractController
                     ->htmlTemplate('registration/confirmation_email.html.twig')
             );
             // do anything else you need here, like send an email
+
+            $profile = new Profile();
+            $profile->setUser($user);
+            $this->profileRepository->save($profile, true);
+
+//            return $this->redirectToRoute('app_login');
 
             return $userAuthenticator->authenticateUser(
                 $user,

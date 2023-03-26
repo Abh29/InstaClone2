@@ -60,12 +60,12 @@ class Profile
         return $this->id;
     }
 
-    public function getAppUser(): ?User
+    public function getUser(): ?User
     {
         return $this->appUser;
     }
 
-    public function setAppUser(User $appUser): self
+    public function setUser(User $appUser): self
     {
         $this->appUser = $appUser;
 
@@ -225,7 +225,7 @@ class Profile
     {
         if (!$this->likedPosts->contains($likedPost)) {
             $this->likedPosts->add($likedPost);
-            $likedPost->addLike($this);
+//            $likedPost->addLike($this);
         }
 
         return $this;

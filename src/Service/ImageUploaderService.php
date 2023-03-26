@@ -65,7 +65,7 @@ class ImageUploaderService
         return $fileName;
     }
 
-    public function remove_image(?string $sub_dir = null, string $file_name)
+    public function remove_image(string $file_name, ?string $sub_dir = null)
     {
         try {
             $folder_path = $this->getTargetDirectory() . ($sub_dir ? '/' . $sub_dir : '');

@@ -1,0 +1,44 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Edit Profile{% endblock %}
+
+{% block body %}
+
+    <div class="container" data-controller="profile">
+        <div class="row justify-content-center">
+
+            <div class="col-md-8">
+                <div class="card">
+                    <div class="card-header">{{ 'Edit Profile'|trans }}</div>
+
+                    <div class="row pt-5" >
+                        <div class="col-10 offset-1"><img id="profile-preview-img" class="post-img" src="{{ asset( twig_image_dir ~ profile_picture ) }}"  style="width: 100%; border-radius: 10px"></div>
+                    </div>
+
+                    <div class="card-body">
+
+                        {{ form_start(edit_form) }}
+
+                        {{ form_row(edit_form.uploadFile) }}
+                        <hr>
+                        {{ form_row(edit_form.title) }}
+                        {{ form_row(edit_form.description) }}
+                        {{ form_row(edit_form.birthdate) }}
+                        {{ form_row(edit_form.url) }}
+
+
+                        <div class="form-group row pt-5">
+                            <div class="col-md-6 ">
+                                <button type="submit" class="btn btn-info">Save</button>
+                            </div>
+                        </div>
+
+
+                        {{ form_end(edit_form) }}
+
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock %}

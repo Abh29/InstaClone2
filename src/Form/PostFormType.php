@@ -20,15 +20,13 @@ class PostFormType extends AbstractType
         $builder
             ->add('caption')
             ->add('uploadFile', FileType::class, [
-                'constraints' => [new Image([]), new File([
-                    'maxSize' => '5Mi',
-                    'extensions' => [
-                        'jpg', 'jpeg','png','svg', 'webp',
-                    ],
-                    'uploadFormSizeErrorMessage' => 'the size of the image should not be bigger than 5MB!',
-                    'extensionsMessage' => 'Please upload a valid Image',
-                ])],
                 'mapped' => false,
+                'label' => 'post Image',
+                'constraints' => [
+                    new Image([
+                    'maxSize' => '8Mi',
+                    'uploadFormSizeErrorMessage' => 'the size of the image should not be bigger than 5MB!',
+                ])],
             ])
             ->add('visibility', ChoiceType::class, [
                 'choices'  => [

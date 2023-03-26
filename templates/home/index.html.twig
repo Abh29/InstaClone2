@@ -1,20 +1,91 @@
 {% extends 'base.html.twig' %}
 
-{% block title %}Hello HomeController!{% endblock %}
+{% block title %}{{ profile.user.userName }}{% endblock %}
 
 {% block body %}
-<style>
-    .example-wrapper { margin: 1em auto; max-width: 800px; width: 95%; font: 18px/1.5 sans-serif; }
-    .example-wrapper code { background: #F5F5F5; padding: 2px 6px; }
-</style>
+    <div class="container" data-controller="profile">
 
-<div class="example-wrapper">
-    <h1>Hello {{ controller_name }}! ✅</h1>
+        {% for flash_success in app.flashes('verify_email_error') %}
+            <div class="alert alert-danger" role="alert">{{ flash_seccess }}</div>
+        {% endfor %}
 
-    This friendly message is coming from:
-    <ul>
-        <li>Your controller at <code><a href="{{ '/home/abh29/Documents/Projects/instaClone3/src/Controller/HomeController.php'|file_link(0) }}">src/Controller/HomeController.php</a></code></li>
-        <li>Your template at <code><a href="{{ '/home/abh29/Documents/Projects/instaClone3/templates/home/index.html.twig'|file_link(0) }}">templates/home/index.html.twig</a></code></li>
-    </ul>
-</div>
+        <div class="row d-flex" style="min-height:250px">
+            <div class="col-4 me-sm-5  me-lg-0" style="height:250px;min-width:150px;">
+                <img   class="pt-1 mr-5"  src="{{ asset( twig_image_dir  ~  profile_picture) }}" style="height:80%; flex:1;">
+            </div>
+            <div class="col-8 pt-4 pl-4">
+
+                <div class="d-flex">
+                    <div class="pe-5"><strong>{{ profile.posts.count }}</strong> posts</div>
+                    <div class="pe-5" id="followers-count"><strong>{{ profile.followers.count }}</strong> followers</div>
+                    <div><strong>{{ profile.following.count }}</strong> following</div>
+                </div>
+
+                <div class="pt-2 font-weight-bold">{{ profile.title ??'...'}}</div>
+                <div>{{profile.description ?? '...'}}</div>
+                <div class=" font-weight-bold pb-3"><a href="#" style="color: rgba(var(--fe0,0,53,105),1);"> {{profile.url ?? 'tmp.org'}} </a></div>
+
+                <div class="pt-3">
+                    <a href="{{ path('app_profiles_edit', {'id' : profile.id}) }}" >edit profile</a>
+                </div>
+            </div>
+
+        </div>
+
+        <div class=" d-flex align-items-baseline">
+            <hr style="flex:1">
+            <div class="d-flex justify-content-end">
+                <a class="addPostBtn " href={{ path('app_posts_create') }}>add a post</a>
+            </div>
+        </div>
+
+
+        <div class="row">
+            {% if profile.posts.count > 0 %}
+
+                {% for post in profile.posts %}
+
+                    <image-post
+                            id="{{ post.id }}"
+                            link="{{ path('app_posts_show', {'id': post.id}) }}"
+                            image="{{ asset(twig_image_dir  ~  posts_folder ~ post.picture ) }}"
+                            thumbnail="{{ asset(twig_image_dir  ~  posts_folder ~ post.thumbnail ) }}"
+                            caption="{{ post.caption }}"
+                            likes="{{ post.likes.count }}"
+                            liked="{{ likes[post.id] ? 1 : 0 }}"
+                            liking_link="{{ path('app_posts_like', {'id': post.id}) }}"
+                    ></image-post>
+
+                {% endfor %}
+            {% else %}
+                <div class="row pt-5" >
+                    <div class="col-4"><img class="post-img" width="100%" src="{{ asset( twig_image_dir ~ 'filler.webp' ) }}" style="width: 100%"></div>
+                    <div class="col-4"><img class="post-img" width="100%" src="{{ asset( twig_image_dir ~ 'filler.webp' ) }}" style="width: 100%"></div>
+                    <div class="col-4"><img class="post-img" width="100%" src="{{ asset( twig_image_dir ~ 'filler.webp' ) }}" style="width: 100%"></div>
+                </div>
+                <div class="row pt-5" >
+                    <div class="col-4"><img class="post-img" width="100%" src="{{ asset( twig_image_dir ~ 'filler.webp' ) }}" style="width: 100%"></div>
+                    <div class="col-4"><img class="post-img" width="100%" src="{{ asset( twig_image_dir ~ 'filler.webp' ) }}" style="width: 100%"></div>
+                    <div class="col-4"><img class="post-img" width="100%" src="{{ asset( twig_image_dir ~ 'filler.webp' ) }}" style="width: 100%"></div>
+                </div>
+            {% endif %}
+        </div>
+
+
+        <div style="padding-top:300px"></div>
+
+        <!-- Modal -->
+        <div class="modal fade" id="postModal" tabindex="-1" aria-labelledby="postModalLabel" aria-hidden="true">
+            <div class="modal-dialog ps-0 pe-0" style="max-width: 75%">
+                <div class="modal-content ps-0 pe-0">
+                    <div class="modal-body">
+                        ...
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    </div>
+
+
 {% endblock %}

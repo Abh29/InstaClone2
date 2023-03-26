@@ -1,0 +1,43 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Create Post{% endblock %}
+
+{% block body %}
+
+    <div class="container" data-controller="post">
+        <div class="row justify-content-center">
+
+            <div class="col-md-8">
+                <div class="card">
+                    <div class="card-header">{{ 'Create a Post'|trans }}</div>
+
+                    <div class="row pt-5" >
+                        <div class="col-10 offset-1"><img id="post-preview-img" class="post-img" src=""  style="width: 100%; border-radius: 10px"></div>
+                    </div>
+
+                    <div class="card-body">
+
+                        {{ form_start(create_form) }}
+
+                        {{ form_row(create_form.uploadFile) }}
+                        <hr>
+                        {{ form_row(create_form.caption) }}
+                        {{ form_row(create_form.description) }}
+                        {{ form_row(create_form.visibility) }}
+                        {{ form_row(create_form.city) }}
+                        {{ form_row(create_form.country) }}
+
+                        <div class="form-group row pt-5">
+                            <div class="col-md-6 ">
+                                <button type="submit" class="btn btn-info">Create</button>
+                            </div>
+                        </div>
+
+                        {{ form_end(create_form) }}
+
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock %}

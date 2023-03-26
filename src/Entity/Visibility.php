@@ -2,9 +2,10 @@
 
 namespace App\Entity;
 
-enum Visibility
+class Visibility
 {
-    case VISIBILITY_PUBLIC;
-    case VISIBILITY_PRIVATE;
-    case VISIBILITY_SUBSCRIBERS_ONLY;
+    public const VISIBILITY_PUBLIC = 0;
+    public const VISIBILITY_PRIVATE = 1;
+    public const VISIBILITY_SUBSCRIBERS_ONLY = 2;
+
 }

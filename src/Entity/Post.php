@@ -160,10 +160,20 @@ class Post
         return $this->likes;
     }
 
+    public function toggleLike(Profile $like): self
+    {
+        if (!$this->likes->contains($like)) {
+            $this->removeLike($like);
+        } else {
+            $this->addLike($like);
+        }
+        return $this;
+    }
     public function addLike(Profile $like): self
     {
         if (!$this->likes->contains($like)) {
             $this->likes->add($like);
+            $like->addLikedPost($this);
         }
 
         return $this;
@@ -172,7 +182,7 @@ class Post
     public function removeLike(Profile $like): self
     {
         $this->likes->removeElement($like);
-
+        $like->removeLikedPost($this);
         return $this;
     }
 
