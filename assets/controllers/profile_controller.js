@@ -5,6 +5,8 @@ export default class extends Controller {
     connect() {
         let self = this;
 
+        $('#postModal .modal-body').html('...');
+
         $('#profile_edit_form_uploadFile').on('change', function () {
             let self = this;
             preview_image(self);

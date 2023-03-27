@@ -1,6 +1,35 @@
-{% extends 'base.html.twig' %}
+<div class="container">
+    <div class="row justify-content-center">
 
-{% block title %}Hello PostsController!{% endblock %}
+        <div class="col-md-12">
+            <div class="card">
+                <div class="card-header">{{ 'Edit this Post'|trans }}</div>
 
-{% block body %}
-{% endblock %}
+                <div class="row pt-5" >
+                    <div class="col-10 offset-1"><img id="post-preview-img" class="post-img" src="{{ asset(twig_image_dir  ~  posts_folder ~ post.picture ) }}" alt="{{ post.caption }}"  style="width: 100%; border-radius: 10px"></div>
+                </div>
+
+                <div class="card-body">
+
+                    {{ form_start(edit_form) }}
+
+                    <hr>
+                    {{ form_row(edit_form.caption) }}
+                    {{ form_row(edit_form.description) }}
+                    {{ form_row(edit_form.visibility) }}
+                    {{ form_row(edit_form.city) }}
+                    {{ form_row(edit_form.country) }}
+
+                    <div class="form-group row pt-5">
+                        <div class="col-md-6 ">
+                            <button type="submit" class="btn btn-info">Edit</button>
+                        </div>
+                    </div>
+
+                    {{ form_end(edit_form) }}
+
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

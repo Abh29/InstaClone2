@@ -42,6 +42,7 @@ class Profile
     private Collection $followers;
 
     #[ORM\OneToMany(mappedBy: 'profile', targetEntity: Post::class, orphanRemoval: true)]
+    #[ORM\OrderBy(["created_at" => "DESC"])]
     private Collection $posts;
 
     #[ORM\ManyToMany(targetEntity: Post::class, mappedBy: 'likes')]

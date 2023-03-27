@@ -44,17 +44,21 @@
             {% if profile.posts.count > 0 %}
 
                 {% for post in profile.posts %}
+                    <div class="col-4 pt-5">
+                        <image-post
+                                id="{{ post.id }}"
+                                show_link="{{ path('app_posts_show', {'id': post.id}) }}"
+                                image="{{ asset(twig_image_dir  ~  posts_folder ~ post.picture ) }}"
+                                thumbnail="{{ asset(twig_image_dir  ~  posts_folder ~ post.thumbnail ) }}"
+                                caption="{{ post.caption }}"
+                                likes="{{ post.likes.count }}"
+                                liked="{{ likes[post.id] ? 1 : 0 }}"
+                                liking_link="{{ path('app_posts_like', {'id': post.id}) }}"
+                                edit_link="{{ path('app_posts_edit', {'id': post.id}) }}"
+                                dell_link="{{ path('app_posts_delete', {'id': post.id}) }}"
+                        ></image-post>
+                    </div>
 
-                    <image-post
-                            id="{{ post.id }}"
-                            link="{{ path('app_posts_show', {'id': post.id}) }}"
-                            image="{{ asset(twig_image_dir  ~  posts_folder ~ post.picture ) }}"
-                            thumbnail="{{ asset(twig_image_dir  ~  posts_folder ~ post.thumbnail ) }}"
-                            caption="{{ post.caption }}"
-                            likes="{{ post.likes.count }}"
-                            liked="{{ likes[post.id] ? 1 : 0 }}"
-                            liking_link="{{ path('app_posts_like', {'id': post.id}) }}"
-                    ></image-post>
 
                 {% endfor %}
             {% else %}

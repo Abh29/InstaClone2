@@ -3,6 +3,7 @@
 namespace App\Controller;
 
 use App\Entity\Post;
+use App\Form\PostEditType;
 use App\Form\PostFormType;
 use App\Repository\PostRepository;
 use App\Repository\UserRepository;
@@ -81,6 +82,55 @@ class PostController extends AbstractController
         return $this->render('post/create.html.twig', [
             'create_form' => $form->createView(),
         ]);
+    }
+
+    #[Route('/posts/edit/{id}', name: 'app_posts_edit')]
+    public function edit(Request $request, $id): Response
+    {
+        if (!$this->getUser())
+            return new JsonResponse('you need to be login !', 403);
+
+        $post = $this->postRepository->find($id);
+        if (!$post)
+            return new JsonResponse('post not found!', 404);
+
+        $profile = $this->getUser()->getProfile();
+        if ($post->getProfile() != $profile)
+            return new JsonResponse('you can not edit a post that does not belong to you !', 403);
+
+        $form = $this->createForm(PostEditType::class, $post, [
+            'action' => $this->generateUrl('app_posts_edit', array('id' => $id)),
+        ]);
+        $form->handleRequest($request);
+
+        if ($form->isSubmitted() && $form->isValid()) {
+            $this->postRepository->save($post, true);
+            return $this->redirectToRoute('app_home');
+        }
+
+        return $this->render('post/edit.html.twig', [
+            'edit_form' => $form->createView(),
+            'post' => $post,
+            'posts_folder' => 'posts/' . $post->getProfile()->getId() .'/',
+        ]);
+    }
+
+    #[Route('/posts/delete/{id}', name: 'app_posts_delete')]
+    public function delete(Request $request, $id): Response
+    {
+        if (!$this->getUser())
+            return new JsonResponse('you need to be login !', 403);
+
+        $post = $this->postRepository->find($id);
+        if (!$post)
+            return new JsonResponse('post not found!', 404);
+
+        $profile = $this->getUser()->getProfile();
+        if ($post->getProfile() != $profile)
+            return new JsonResponse('you can not delete a post that does not belong to you !', 403);
+
+        $this->postRepository->remove($post, true);
+        return $this->redirectToRoute('app_home');
     }
 
     #[Route('/posts/like/{id}', name: 'app_posts_like')]

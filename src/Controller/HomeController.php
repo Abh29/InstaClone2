@@ -3,19 +3,21 @@
 namespace App\Controller;
 
 use App\Entity\Profile;
+use App\Repository\PostRepository;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
 
 class HomeController extends AbstractController
 {
+
     #[Route('/')]
     public function app(): Response
     {
       return $this->redirectToRoute('app_home');
     }
     #[Route('/home', name: 'app_home')]
-    public function index(): Response
+    public function index(PostRepository $postRepository): Response
     {
         /* @var Profile $profile */
         $profile = $this->getUser()->getProfile();
