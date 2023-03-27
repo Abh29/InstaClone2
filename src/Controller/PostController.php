@@ -136,6 +136,8 @@ class PostController extends AbstractController
     #[Route('/posts/like/{id}', name: 'app_posts_like')]
     public function like(int $id): Response
     {
+        if (!$this->getUser())
+            return new JsonResponse('you need to be login !', 403);
         $post = $this->postRepository->find($id);
         if (!$post)
             return new JsonResponse('post not found!', 404);
