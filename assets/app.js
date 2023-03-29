@@ -31,14 +31,15 @@ import LikeButton from "./components/LikeButton.vue";
 import SubscribeButton from "./components/SubscribeButton.vue";
 import ImagePost from "./components/ImagePost.vue";
 import ProfileInfo from "./components/ProfileInfo.vue";
-
+import ImagePostLoader from "./components/ImagePostLoader.vue";
+import ProfilesSearchBar from "./components/ProfilesSearchBar.vue";
 
 import axios from 'axios'
 import VueAxios from 'vue-axios'
 
 import VLazyImageComponent from "v-lazy-image";
 
-const app = createApp({
+export const app = createApp({
     el: '#app'
 })
     .component('LikeButton', LikeButton)
@@ -46,7 +47,12 @@ const app = createApp({
     .component('ImagePost', ImagePost)
     .component('VLazyImage', VLazyImageComponent)
     .component('ProfileInfo', ProfileInfo)
+    .component('ImagePostLoader', ImagePostLoader)
+    .component('ProfilesSearchBar', ProfilesSearchBar)
     .use(VueAxios, axios)
     .mount("#app")
+
+
+
 
 import './controllers/profile_controller';

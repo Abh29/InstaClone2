@@ -6,18 +6,21 @@ use App\Entity\Profile;
 use App\Form\ProfileEditFormType;
 use App\Repository\PostRepository;
 use App\Repository\ProfileRepository;
+use App\Repository\UserRepository;
 use App\Service\ImageUploaderService;
-use phpDocumentor\Reflection\Types\Collection;
+use Sensio\Bundle\FrameworkExtraBundle\Configuration\IsGranted;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
 
+#[IsGranted('ROLE_USER')]
 class ProfileController extends AbstractController
 {
 
     public function __construct(private ProfileRepository       $profileRepository,
+                                private UserRepository          $userRepository,
                                 private ImageUploaderService    $imageUploaderService,
                                 private PostRepository $postRepository
     )
@@ -25,13 +28,13 @@ class ProfileController extends AbstractController
     }
 
     #[Route('/profiles/{id}', name: 'app_profiles')]
-    public function index(ProfileRepository $profileRepository, int $id): Response
+    public function index(ProfileRepository $profileRepository, int $id, Request $request): Response
     {
         if ( $this->getUser() && $this->getUser()->getUserIdentifier() == $id)
             return $this->redirect(path('app_home'));
 
         $profile = $profileRepository->find($id);
-        if (!$profile)
+        if (!$profile || $profile->getUser()->isAdmin())
             throw $this->createNotFoundException(
                 'No Profile found for id '.$id
             );
@@ -41,11 +44,11 @@ class ProfileController extends AbstractController
         $likes = array();
 
         if ($currentProfile->getId() === $profile->getId())
-            $posts = $this->postRepository->getForFollowers($profile);
-        else if ($currentProfile->getFollowing()->contains($profile))
-            $posts = $this->postRepository->getForFollowers($profile);
+            $posts = $this->postRepository->getForFollowers($profile, $request->get('page', 1), $request->get('limit', 12));
+        else if ($currentProfile->getFollowing()->contains($profile, ))
+            $posts = $this->postRepository->getForFollowers($profile, $request->get('page', 1), $request->get('limit', 12));
         else
-            $posts = $this->postRepository->getPublicOnly($profile);
+            $posts = $this->postRepository->getPublicOnly($profile, $request->get('page', 1), $request->get('limit', 12));
 
         foreach ($posts as $post){
             $likes[$post->getId()] = $currentProfile->getLikedPosts()->contains($post);
@@ -110,6 +113,31 @@ class ProfileController extends AbstractController
         $this->getUser()->getProfile()->addFollowing($profile);
         $this->profileRepository->save($this->getUser()->getProfile(), true);
         return new JsonResponse(['you have successfully subscribed !'],200);
+    }
+
+    #[Route('/search', name: 'app_profile_search')]
+    public function search(Request $request)
+    {
+        $query = $request->get('query', '');
+
+        $result  = $this->userRepository->findLikeUserName($query);
+
+        if (count($result) == 0)
+            $result = $this->userRepository->findLikeUserName('%' . $query);
+
+        $out = array();
+
+        foreach ($result as $u){
+            if ($u->isAdmin())
+                continue;
+            $out[] = [
+                'id' => $u->getId(),
+                'userName' => $u->getUserName(),
+                'picture' => '/images/profiles/' . $u->getProfile()->getPicture(),
+                'link' => $this->generateUrl('app_profiles', ['id' => $u->getProfile()->getId()]),
+            ];
+        }
+        return new JsonResponse($out, 200);
     }
 
 }

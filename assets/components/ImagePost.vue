@@ -46,6 +46,7 @@ export default {
   },
   methods: {
     showModal() {
+      $('#postModal .modal-body').html('...');
       this.$http.get(this.show_link).then(function (response) {
         $('#postModal .modal-body').html(response.data);
       }).catch(function (error){
@@ -54,6 +55,7 @@ export default {
 
     },
     editModal() {
+      $('#postModal .modal-body').html('...');
       this.$http.get(this.edit_link).then(function (response) {
         $('#postModal .modal-body').html(response.data);
       }).catch(function (error){

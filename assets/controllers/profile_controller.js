@@ -1,9 +1,23 @@
 import { Controller } from '@hotwired/stimulus';
 import axios from "axios";
+import ImagePost from "../components/ImagePost.vue";
+import {foobar2} from "../app";
 
 export default class extends Controller {
     connect() {
         let self = this;
+        let current_page = 1;
+
+        $('#load-more-btn').on('click', function (){
+            let href = $(this).attr('href') + '?page=' + ++current_page;
+            axios.get(href).then(function (response){
+                // $('#posts-container').append($(response.data));
+                console.log(app);
+                app.$forceUpdate();
+            }).catch((e) => {
+                console.log(e.message);
+            })
+        })
 
         $('#postModal .modal-body').html('...');
 

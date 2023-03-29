@@ -33,14 +33,19 @@
                 <!-- Right Side Of Navbar -->
                 <ul class="navbar-nav ms-auto">
                     <!-- Authentication Links -->
-
                     {% if app.user %}
+
+                        <li class="nav-item" id="profiles-searcher">
+                            <profiles-search-bar search_link="{{ path('app_profile_search') }}"></profiles-search-bar>
+                        </li>
+
                         <li class="nav-item dropdown">
                             <a id="navbarDropdown" class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false" v-pre>
                                 {{ app.user.userName }}
                             </a>
 
                             <div class="dropdown-menu dropdown-menu-end" aria-labelledby="navbarDropdown">
+                                <a class="dropdown-item" href="{{ path('app_home') }}">{{ 'Home' | trans }}</a>
                                 <a class="dropdown-item" href="{{ path('app_logout') }}"
                                    onclick="event.preventDefault();
                                                      document.getElementById('logout-form').submit();">

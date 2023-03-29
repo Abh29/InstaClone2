@@ -7,7 +7,9 @@ use App\Repository\PostRepository;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
+use Symfony\Component\Security\Http\Attribute\IsGranted;
 
+#[IsGranted('ROLE_USER')]
 class HomeController extends AbstractController
 {
 
@@ -19,6 +21,9 @@ class HomeController extends AbstractController
     #[Route('/home', name: 'app_home')]
     public function index(PostRepository $postRepository): Response
     {
+        if ($this->getUser()->isAdmin())
+            return $this->redirectToRoute('admin');
+
         /* @var Profile $profile */
         $profile = $this->getUser()->getProfile();
 

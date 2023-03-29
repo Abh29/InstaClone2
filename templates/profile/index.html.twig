@@ -40,7 +40,7 @@
         </div>
 
 
-        <div class="row">
+        <div class="row" id="posts-container">
             {% if profile.posts.count > 0 %}
 
                 {% for post in posts %}
@@ -73,8 +73,7 @@
             {% endif %}
         </div>
 
-
-        <div style="padding-top:300px"></div>
+        <image-post-loader link="{{ path('app_posts_index', {'id': profile.id}) }}"></image-post-loader>
 
         <!-- Modal -->
         <div class="modal fade" id="postModal" tabindex="-1" aria-labelledby="postModalLabel" aria-hidden="true">

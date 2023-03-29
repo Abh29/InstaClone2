@@ -3,30 +3,69 @@
 namespace App\Controller;
 
 use App\Entity\Post;
+use App\Entity\Profile;
 use App\Form\PostEditType;
 use App\Form\PostFormType;
 use App\Repository\PostRepository;
+use App\Repository\ProfileRepository;
 use App\Repository\UserRepository;
 use App\Service\ImageUploaderService;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
+use Symfony\Component\Asset\Package;
+use Symfony\Component\Asset\VersionStrategy\EmptyVersionStrategy;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
+use Symfony\Component\Security\Http\Attribute\IsGranted;
 
+#[IsGranted('ROLE_USER')]
 class PostController extends AbstractController
 {
-    private PostRepository $postRepository;
-    private UserRepository $userRepository;
-    private ImageUploaderService $imageUploaderService;
 
-
-    public function __construct(PostRepository $postRepository, UserRepository $userRepository, ImageUploaderService $imageUploaderService)
+    public function __construct(
+        private PostRepository $postRepository,
+        private UserRepository $userRepository,
+        private ProfileRepository $profileRepository,
+        private ImageUploaderService $imageUploaderService)
     {
-        $this->postRepository = $postRepository;
-        $this->userRepository = $userRepository;
-        $this->imageUploaderService = $imageUploaderService;
     }
+
+    #[Route('/posts/all/{id}', name: 'app_posts_index')]
+    public function index(int $id, Request $request): Response
+    {
+        $profile = $this->profileRepository->find($id);
+        if (!$profile)
+            return new JsonResponse('no profile was found for this id!', 404);
+
+        $currentProfile = $this->getUser()->getProfile();
+
+        if ($currentProfile->getId() === $profile->getId())
+            $posts = $this->postRepository->getForFollowers($profile, $request->get('page', 1), $request->get('limit', 12));
+        else if ($currentProfile->getFollowing()->contains($profile, ))
+            $posts = $this->postRepository->getForFollowers($profile, $request->get('page', 1), $request->get('limit', 12));
+        else
+            $posts = $this->postRepository->getPublicOnly($profile, $request->get('page', 1), $request->get('limit', 12));
+
+        $resp = array();
+
+        foreach ($posts as $post) {
+            $resp[] = [
+                'id' => $post->getId(),
+                'show_link' => $this->generateUrl('app_posts_show', ['id' => $post->getId()]),
+                'image' => '/images/posts/' . $profile->getId() . '/' . $post->getPicture(),
+                'thumbnail' => '/images/posts/' . $profile->getId() . '/' . $post->getThumbnail(),
+                'caption' => $post->getCaption(),
+                'likes' => $post->getLikes()->count(),
+                'liked' => $currentProfile->getLikedPosts()->contains($post) ? '1' : '0',
+                'liking_link' => $this->generateUrl('app_posts_like', ['id' => $post->getId()])
+            ];
+        }
+
+        return new JsonResponse($resp, 200);
+
+    }
+
 
     #[Route('/posts/show/{id}', name: 'app_posts_show')]
     public function show(int $id): Response

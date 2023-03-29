@@ -5,7 +5,9 @@ namespace App\Repository;
 use App\Entity\Post;
 use App\Entity\Profile;
 use App\Entity\Visibility;
+use ContainerYnlLcrf\getKnpPaginatorService;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
+use Doctrine\ORM\Tools\Pagination\Paginator;
 use Doctrine\Persistence\ManagerRegistry;
 
 /**
@@ -44,52 +46,67 @@ class PostRepository extends ServiceEntityRepository
     /**
      * @return Post[] Returns an array of Post objects
      */
-    public function getAllForProfile(Profile $profile): array
+    public function getAllForProfile(Profile $profile, $currentPage = 1, $limit = 10): array
     {
         if ($profile == null)
             return [];
 
-        return $this->createQueryBuilder('post')
+        $query =  $this->createQueryBuilder('post')
             ->andWhere('post.profile = :val')
             ->setParameter('val', $profile)
             ->orderBy('post.created_at', 'DESC')
-            ->setMaxResults(10)
+            ->getQuery();
+
+        return $this->paginate($query, $currentPage, $limit)
             ->getQuery()
-            ->getResult()
-        ;
+            ->getResult();
     }
 
-    public function getPublicOnly(Profile $profile): array
+    public function getPublicOnly(Profile $profile, $currentPage = 1, $limit = 10): array
     {
-        return $this->createQueryBuilder('post')
+        $query =  $this->createQueryBuilder('post')
             ->andWhere('post.profile = :val2')
             ->setParameter('val2', $profile)
             ->andWhere('post.visibility = :val')
             ->setParameter('val', Visibility::VISIBILITY_PUBLIC)
             ->orderBy('post.created_at', 'DESC')
-            ->setMaxResults(10)
+            ->getQuery();
+
+        return $this->paginate($query, $currentPage, $limit)
             ->getQuery()
-            ->getResult()
-        ;
+            ->getResult();
     }
 
-    public function getForFollowers(Profile $profile): array
+    public function getForFollowers(Profile $profile, $currentPage = 1, $limit = 10): array
     {
         if ($profile == null)
             return [];
 
-        return $this->createQueryBuilder('post')
+        $query =  $this->createQueryBuilder('post')
             ->andWhere('post.profile = :val')
             ->setParameter('val', $profile)
             ->andWhere('post.visibility = :val2 OR post.visibility = :val3')
             ->setParameter('val2', Visibility::VISIBILITY_SUBSCRIBERS_ONLY)
             ->setParameter('val3', Visibility::VISIBILITY_PUBLIC)
             ->orderBy('post.created_at', 'DESC')
-            ->setMaxResults(10)
+            ->getQuery();
+
+        return $this->paginate($query, $currentPage, $limit)
             ->getQuery()
-            ->getResult()
-        ;
+            ->getResult();
     }
+
+    public function paginate($dql, $page = 1, $limit = 5)
+    {
+        $paginator = new Paginator($dql);
+
+        $paginator->getQuery()
+            ->setFirstResult($limit * ($page - 1)) // Offset
+            ->setMaxResults($limit); // Limit
+
+        return $paginator;
+    }
+
 
 //    public function findOneBySomeField($value): ?Post
 //    {
